@@ -4,8 +4,17 @@ import chalk from "chalk";
 import inquirer from "inquirer";
 import fs from "fs";
 import path from "path";
-import { appBoilerplate } from "./util/boilerplate";
+import { exec } from "child_process";
+import {
+  appBoilerplate,
+  interfaceBoilerplate,
+  modelBoilerplate,
+  routerBoilderplate,
+} from "./util/boilerplate";
+import { promisify } from "util";
 const log = console.log;
+
+const Exec = promisify(exec);
 
 const validateService = (service: string) => {
   if (!service || service.length === 0) {
@@ -43,11 +52,24 @@ const copyFiles = (files: string[], inputPath: string, outputPath: string) => {
   });
 };
 
+const getBoilerplate = (file: string, service: string) => {
+  if (file === ".router.ts") {
+    return routerBoilderplate(service);
+  }
+  if (file === ".interface.ts") {
+    return interfaceBoilerplate(service);
+  }
+  if (file === ".model.ts") {
+    return modelBoilerplate(service);
+  }
+  return "";
+};
+
 const createFiles = (files: string[], service: string, srcPath: string) => {
   files.forEach((file) => {
     const filename = `${service}${file}`;
     const filepath = path.join(srcPath, filename);
-    fs.writeFileSync(filepath, "");
+    fs.writeFileSync(filepath, getBoilerplate(file, service));
   });
 };
 
@@ -93,6 +115,22 @@ const createEnvForNewService = (
   fs.writeFileSync(newEnvPath, finalData);
 };
 
+const createDockerfileForNewService = (
+  pipelinePath: string,
+  servicePath: string,
+  newPort: number,
+) => {
+  const pipelineDockerfilePath = path.join(pipelinePath, "Dockerfile");
+  const newDockerfilePath = path.join(servicePath, "Dockerfile");
+  const DockerfileData = fs.readFileSync(pipelineDockerfilePath, "utf-8");
+  const replacedWithDocker = DockerfileData.replace(
+    /EXPOSE\s*\d+/,
+    `EXPOSE ${newPort}`,
+  );
+
+  fs.writeFileSync(newDockerfilePath, replacedWithDocker);
+};
+
 const app = async () => {
   try {
     const welcomeMessage = chalk.bgMagenta.whiteBright.bold(
@@ -121,11 +159,12 @@ const app = async () => {
     const srcPath = path.join(servicePath, "src");
     const appFilePath = path.join(srcPath, "app.ts");
 
-    const filesListForCopy = ["Dockerfile", "package.json", "tsconfig.json"];
+    const filesListForCopy = ["package.json", "tsconfig.json"];
 
     const filesListForCreate = [
       ".controller.ts",
       ".service.ts",
+      ".model.ts",
       ".interface.ts",
       ".enum.ts",
       ".middleware.ts",
@@ -145,7 +184,7 @@ const app = async () => {
     // creating app.ts
     fs.writeFileSync(
       appFilePath,
-      appBoilerplate(serviceName, newPort).join("\n"),
+      appBoilerplate(serviceName, newPort),
       "utf-8",
     );
 
@@ -154,14 +193,27 @@ const app = async () => {
     // Create ENV for new service
     createEnvForNewService(pipelinePath, servicePath, newPort);
 
+    // Create Dockerfile for new service
+    createDockerfileForNewService(pipelinePath, servicePath, newPort);
+
     // copy all required files for typescript
     copyFiles(filesListForCopy, pipelinePath, servicePath);
 
     // creating required files for start coding
     createFiles(filesListForCreate, serviceName, srcPath);
+
+    log(
+      chalk.bgGreen.black.bold(" 🚀 Installing Depedencies.. Please wait ✋ "),
+    );
+    await Exec("npm install", { cwd: servicePath });
     log(
       chalk.bgYellow.black.bold(
         `\n SUCCESS - ${serviceName} created successfully!`,
+      ),
+    );
+    log(
+      chalk.bgBlue.white.bold(
+        "Browser to service folder and run 'npm run dev'",
       ),
     );
     exitApp();
