@@ -9,6 +9,7 @@ import {
   appBoilerplate,
   interfaceBoilerplate,
   modelBoilerplate,
+  packageBoilerPlate,
   routerBoilderplate,
 } from "./util/boilerplate";
 import { promisify } from "util";
@@ -131,6 +132,12 @@ const createDockerfileForNewService = (
   fs.writeFileSync(newDockerfilePath, replacedWithDocker);
 };
 
+const createPackageForNewService = (service: string, servicePath: string) => {
+  const data = packageBoilerPlate(service);
+  const newPackagePath = path.join(servicePath, "package.json");
+  fs.writeFileSync(newPackagePath, data);
+};
+
 const app = async () => {
   try {
     const welcomeMessage = chalk.bgMagenta.whiteBright.bold(
@@ -159,7 +166,7 @@ const app = async () => {
     const srcPath = path.join(servicePath, "src");
     const appFilePath = path.join(srcPath, "app.ts");
 
-    const filesListForCopy = ["package.json", "tsconfig.json"];
+    const filesListForCopy = ["tsconfig.json"];
 
     const filesListForCreate = [
       ".controller.ts",
@@ -195,6 +202,9 @@ const app = async () => {
 
     // Create Dockerfile for new service
     createDockerfileForNewService(pipelinePath, servicePath, newPort);
+
+    // Create package for new service
+    createPackageForNewService(service, servicePath);
 
     // copy all required files for typescript
     copyFiles(filesListForCopy, pipelinePath, servicePath);
