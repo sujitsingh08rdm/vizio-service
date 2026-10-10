@@ -1,1 +1,6 @@
-["auth", "bucket", "payment", "gateway"]
+[
+  "gateway",
+  "auth",
+  "payment",
+  "demo"
+]
