@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import dotenv from "dotenv";
 dotenv.config();
 import chalk from "chalk";
@@ -7,12 +8,14 @@ import path from "path";
 import { exec } from "child_process";
 import {
   appBoilerplate,
+  gatewayBoilerplate,
   interfaceBoilerplate,
   modelBoilerplate,
   packageBoilerPlate,
   routerBoilderplate,
 } from "./util/boilerplate";
 import { promisify } from "util";
+import { pathToFileURL } from "url";
 const log = console.log;
 
 const Exec = promisify(exec);
@@ -138,6 +141,43 @@ const createPackageForNewService = (service: string, servicePath: string) => {
   fs.writeFileSync(newPackagePath, data);
 };
 
+const getNewPort = (pipelinePath: string) => {
+  const envPath = path.join(pipelinePath, ".env");
+  const envData = fs.readFileSync(envPath, "utf-8");
+  const arr = envData.split("\n");
+  const lastPortLine = arr.find((line) => {
+    return line.trimStart().startsWith("LAST_PORT");
+  });
+  const regExpForPortValue = /LAST_PORT\s*=\s*(\d+)/;
+  const lastPort = parseInt(
+    lastPortLine?.match(regExpForPortValue)?.[1] as string,
+  );
+  const newPort = lastPort + 1;
+  return newPort;
+};
+
+const addGateway = (
+  gatewayPath: string,
+  serviceName: string,
+  newPort: number,
+) => {
+  const data = gatewayBoilerplate(serviceName, newPort);
+  const input = path.join(gatewayPath, "src", "app.ts");
+  fs.appendFileSync(input, data);
+};
+
+const addServer = async (gatewayPath: string, serviceName: string) => {
+  const main = path.resolve(gatewayPath, "../../");
+
+  const inputPath = path.join(main, "src", "servers.json");
+
+  const { default: servers } = await import(pathToFileURL(inputPath).href, {
+    with: { type: "json" },
+  });
+  servers.push(serviceName);
+  fs.writeFileSync(inputPath, JSON.stringify(servers, null, 2));
+};
+
 const app = async () => {
   try {
     const welcomeMessage = chalk.bgMagenta.whiteBright.bold(
@@ -159,9 +199,11 @@ const app = async () => {
     }
 
     const serviceName = validateService(service);
+    const currentDir = process.cwd();
     const appPath = __dirname;
-    const rootPath = path.resolve(appPath, "../../");
+    const rootPath = currentDir;
     const pipelinePath = path.resolve(appPath, "../");
+    const gatewayPath = path.join(path.resolve(currentDir, "../"), "gateway");
     const servicePath = path.join(rootPath, serviceName);
     const srcPath = path.join(servicePath, "src");
     const appFilePath = path.join(srcPath, "app.ts");
@@ -186,8 +228,8 @@ const app = async () => {
     makeFolder(srcPath);
 
     // change last port in pipeline
-    const lastPort = parseInt(process.env.LAST_PORT!);
-    const newPort = lastPort + 1;
+    const newPort = getNewPort(pipelinePath);
+
     // creating app.ts
     fs.writeFileSync(
       appFilePath,
@@ -211,6 +253,12 @@ const app = async () => {
 
     // creating required files for start coding
     createFiles(filesListForCreate, serviceName, srcPath);
+
+    // Adding gateway
+    addGateway(gatewayPath, serviceName, newPort);
+
+    // adding server
+    await addServer(gatewayPath, serviceName);
 
     log(
       chalk.bgGreen.black.bold(" 🚀 Installing Depedencies.. Please wait ✋ "),

@@ -27,8 +27,7 @@ export const appBoilerplate = (service: string, port: number) => {
     `})\n`,
     `app.use(express.json())`,
     `app.use(express.urlencoded({ extended: false }));`,
-    `app.use(cors({ origin: process.env.CLIENT, credentials: true }))`,
-    `app.use(morgan("dev"))\n`,
+    `app.use(cors({ origin: process.env.CLIENT, credentials: true }))\n`,
     `app.use("/${service}", ${getServiceInPascalCase(service)}Router)`,
   ].join("\n");
 };
@@ -100,4 +99,13 @@ export const packageBoilerPlate = (service: string) => {
   };
 
   return JSON.stringify(data, null, 2);
+};
+
+export const gatewayBoilerplate = (service: string, port: number) => {
+  return [
+    `\n\napp.use("/${service}",createProxyMiddleware({`,
+    `\ttarget: "http://localhost:${port}/${service}",`,
+    `\tchangeOrigin: true`,
+    `}))`,
+  ].join("\n");
 };
