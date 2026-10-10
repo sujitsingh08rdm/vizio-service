@@ -14,6 +14,8 @@ app.listen(process.env.PORT, () => {
 app.use(cors({ origin: process.env.CLIENT, credentials: true }));
 app.use(morgan("dev"));
 
-app.use("/", (req: Request, res: Response) => {
-  res.json({ message: "Gateway Server" });
-});
+
+app.use("/one",createProxyMiddleware({
+	target: "http://localhost:4001/one",
+	changeOrigin: true
+}))
