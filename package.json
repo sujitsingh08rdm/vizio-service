@@ -17,6 +17,7 @@
   "dependencies": {
     "concurrently": "^10.0.6",
     "cors": "^2.8.6",
+    "create-microservice-pipeline": "^1.0.3",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
     "gateway": "file:",
