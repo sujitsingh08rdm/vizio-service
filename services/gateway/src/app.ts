@@ -19,3 +19,23 @@ app.use("/one",createProxyMiddleware({
 	target: "http://localhost:4001/one",
 	changeOrigin: true
 }))
+
+app.use("/auth",createProxyMiddleware({
+	target: "http://localhost:4002/auth",
+	changeOrigin: true
+}))
+
+app.use("/bucket",createProxyMiddleware({
+	target: "http://localhost:4003/bucket",
+	changeOrigin: true
+}))
+
+app.use("/video",createProxyMiddleware({
+	target: "http://localhost:4004/video",
+	changeOrigin: true
+}))
+
+app.use("/notification",createProxyMiddleware({
+	target: "http://localhost:4005/notification",
+	changeOrigin: true
+}))

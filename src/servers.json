@@ -1,4 +1,8 @@
 [
   "gateway",
-  "one"
+  "one",
+  "auth",
+  "bucket",
+  "video",
+  "notification"
 ]
