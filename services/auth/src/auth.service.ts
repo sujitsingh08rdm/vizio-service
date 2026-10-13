@@ -2,7 +2,11 @@ import AuthModel from "./auth.model";
 import { v4 as uuid } from "uuid";
 import axios from "axios";
 import moment from "moment";
-import { AuthModelInterface, MessageInterface, VerifyOTPInterface } from "./auth.interface";
+import {
+  AuthModelInterface,
+  MessageInterface,
+  VerifyOTPInterface,
+} from "./auth.interface";
 import jwt from "jsonwebtoken";
 axios.defaults.baseURL = process.env.MSG_SERVER;
 
@@ -16,18 +20,17 @@ const getAccessToken = async (auth: AuthModelInterface): Promise<string> => {
   return token;
 };
 
-export const sendOtp = async (body: any): Promise<MessageInterface> => {
-  const authPayload = {
-    mobile: body.mobile,
-    refreshToken: uuid(),
-    expiredAt: moment().add(1, "M"),
-  };
+export const signup = async (body: any): Promise<MessageInterface> => {
+  await Promise.all([AuthModel.create(body), sendOtp({ mobile: body.mobile })]);
+  return { message: "Signup success" };
+};
 
-  await AuthModel.findOneAndUpdate(
-    { mobile: body.mobile },
-    { $set: authPayload },
-    { upsert: true, new: true },
-  );
+export const sendOtp = async (body: any): Promise<MessageInterface> => {
+  const auth = await AuthModel.find({ mobile: body.mobile });
+
+  if (!auth) {
+    throw new Error("User Not Found, Try to Sign up first");
+  }
 
   return { message: "OTP send Succesfully" };
 };
