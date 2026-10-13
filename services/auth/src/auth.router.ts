@@ -1,8 +1,9 @@
-import { Router, Request, Response } from "express"
-const AuthRouter = Router()
+import { Router } from "express";
+import { resendOtp, sendOtp, verifyOtp } from "./auth.controller";
+const AuthRouter = Router();
 
-AuthRouter.get("/", (req: Request, res: Response) => {
-	res.json({message: "Hello From auth service"})
-})
+AuthRouter.post("/send-otp", sendOtp);
+AuthRouter.post("/verify-otp", verifyOtp);
+AuthRouter.post("/resend-otp", resendOtp);
 
-export default AuthRouter
+export default AuthRouter;
