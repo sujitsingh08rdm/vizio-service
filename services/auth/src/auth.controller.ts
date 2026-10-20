@@ -55,3 +55,13 @@ export const resendOtp = async (req: Request, res: Response) => {
       res.status(500).json({ message: error.message });
   }
 };
+
+export const verifyToken = async (req: Request, res: Response) => {
+  try {
+    const auth = await authService.verifyToken(req.body);
+    res.json(auth);
+  } catch (error) {
+    if (error instanceof Error)
+      res.status(500).json({ message: error.message });
+  }
+};

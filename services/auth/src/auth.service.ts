@@ -1,13 +1,17 @@
 import AuthModel from "./auth.model";
-import { v4 as uuid } from "uuid";
 import axios from "axios";
-import moment from "moment";
 import {
   AuthModelInterface,
   MessageInterface,
   VerifyOTPInterface,
 } from "./auth.interface";
 import jwt from "jsonwebtoken";
+import {
+  SendOtpDto,
+  SignupDto,
+  VerifyOtpDto,
+  VerifyTokenDto,
+} from "./auth.dto";
 axios.defaults.baseURL = process.env.MSG_SERVER;
 
 const getAccessToken = async (auth: AuthModelInterface): Promise<string> => {
@@ -20,12 +24,12 @@ const getAccessToken = async (auth: AuthModelInterface): Promise<string> => {
   return token;
 };
 
-export const signup = async (body: any): Promise<MessageInterface> => {
+export const signup = async (body: SignupDto): Promise<MessageInterface> => {
   await Promise.all([AuthModel.create(body), sendOtp({ mobile: body.mobile })]);
   return { message: "Signup success" };
 };
 
-export const sendOtp = async (body: any): Promise<MessageInterface> => {
+export const sendOtp = async (body: SendOtpDto): Promise<MessageInterface> => {
   const auth = await AuthModel.find({ mobile: body.mobile });
 
   if (!auth) {
@@ -35,14 +39,16 @@ export const sendOtp = async (body: any): Promise<MessageInterface> => {
   return { message: "OTP send Succesfully" };
 };
 
-export const verifyOtp = async (body: any): Promise<VerifyOTPInterface> => {
+export const verifyOtp = async (
+  body: VerifyOtpDto,
+): Promise<VerifyOTPInterface> => {
   const auth = await AuthModel.findOne({ mobile: body.mobile }).lean();
 
   if (!auth) {
     throw new Error("User not found, Please sign up");
   }
 
-  if (body.otp !== "1234") {
+  if (body.otp !== 1234) {
     throw new Error("Failed to verify OTP");
   }
 
@@ -55,8 +61,15 @@ export const verifyOtp = async (body: any): Promise<VerifyOTPInterface> => {
   };
 };
 
-export const resendOtp = async (body: any): Promise<MessageInterface> => {
+export const resendOtp = async (
+  body: SendOtpDto,
+): Promise<MessageInterface> => {
   return { message: "OTP resend Successfully" };
+};
+
+export const verifyToken = async (body: VerifyTokenDto) => {
+  const payload = await jwt.verify(body.token, process.env.AUTH_SECRET!);
+  return payload;
 };
 
 // export const sendOtp = async (body: any): Promise<MessageInterface> => {
