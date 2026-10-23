@@ -1,0 +1,48 @@
+{
+  "timestamp": 1792737690372,
+  "accountId": "879330512180",
+  "queue": "arn:aws:mediaconvert:ap-southeast-1:879330512180:queues/Default",
+  "jobId": "1792737629168-u04ble",
+  "status": "COMPLETE",
+  "userMetadata": {},
+  "outputGroupDetails": [
+    {
+      "outputDetails": [
+        {
+          "outputFilePaths": [
+            "s3://vizio-service/streams/6ad8515c8234c974c4a5f2b1/8zv9lgnc/8zv9lgnc_1080.m3u8"
+          ],
+          "durationInMs": 99032,
+          "videoDetails": {
+            "widthInPx": 1920,
+            "heightInPx": 1080,
+            "averageBitrate": 8487116
+          }
+        },
+        {
+          "outputFilePaths": [
+            "s3://vizio-service/streams/6ad8515c8234c974c4a5f2b1/8zv9lgnc/8zv9lgnc_720.m3u8"
+          ],
+          "durationInMs": 99032,
+          "videoDetails": {
+            "widthInPx": 1280,
+            "heightInPx": 720,
+            "averageBitrate": 3494676
+          }
+        }
+      ],
+      "playlistFilePaths": [
+        "s3://vizio-service/streams/6ad8515c8234c974c4a5f2b1/8zv9lgnc/8zv9lgnc.m3u8"
+      ],
+      "type": "HLS_GROUP"
+    }
+  ],
+  "paddingInserted": 0,
+  "blackVideoDetected": 0,
+  "warnings": [
+    {
+      "code": 250004,
+      "count": 1
+    }
+  ]
+}
