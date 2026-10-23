@@ -15,7 +15,12 @@ import {
 axios.defaults.baseURL = process.env.MSG_SERVER;
 
 const getAccessToken = async (auth: AuthModelInterface): Promise<string> => {
-  const payload = { id: auth._id, mobile: auth.mobile };
+  const payload = {
+    id: auth._id,
+    mobile: auth.mobile,
+    email: auth.email,
+    fullname: auth.fullname,
+  };
 
   const expiresIn = parseInt(process.env.ACCESS_TOKEN_EXPIRY!);
   const secret = process.env.AUTH_SECRET!;

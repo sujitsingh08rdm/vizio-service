@@ -1,8 +1,30 @@
-import { Router, Request, Response } from "express"
-const VideoRouter = Router()
+import { Router, Request, Response } from "express";
+import {
+  createVideo,
+  fetchVideos,
+  videoTranscodingWebhook,
+} from "./video.controller";
+import {
+  AuthMiddleware,
+  DtoMiddleware,
+  WebhookGuardMiddleware,
+} from "./video.middleware";
+import { createVideoDtoSchema } from "./video.dto";
+const VideoRouter = Router();
 
-VideoRouter.get("/", (req: Request, res: Response) => {
-	res.json({message: "Hello From video service"})
-})
+VideoRouter.post(
+  "/",
+  AuthMiddleware,
+  DtoMiddleware(createVideoDtoSchema),
+  createVideo,
+);
 
-export default VideoRouter
+VideoRouter.get("/", AuthMiddleware, fetchVideos);
+
+VideoRouter.post(
+  "/webhook/transcoding",
+  WebhookGuardMiddleware,
+  videoTranscodingWebhook,
+);
+
+export default VideoRouter;
