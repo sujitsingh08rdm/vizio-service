@@ -1,16 +1,19 @@
 {
-  "timestamp": 1792737690372,
+  "timestamp": 1792749536386,
   "accountId": "879330512180",
   "queue": "arn:aws:mediaconvert:ap-southeast-1:879330512180:queues/Default",
-  "jobId": "1792737629168-u04ble",
+  "jobId": "1792749469138-ivjzjo",
   "status": "COMPLETE",
-  "userMetadata": {},
+  "userMetadata": {
+    "user_id": "6ad8515c8234c974c4a5f2b1",
+    "video_id": "6adb2f5d7a4f61f67b01b53e"
+  },
   "outputGroupDetails": [
     {
       "outputDetails": [
         {
           "outputFilePaths": [
-            "s3://vizio-service/streams/6ad8515c8234c974c4a5f2b1/8zv9lgnc/8zv9lgnc_1080.m3u8"
+            "s3://vizio-service/streams/6ad8515c8234c974c4a5f2b1/yx8kcdrc/yx8kcdrc_1080.m3u8"
           ],
           "durationInMs": 99032,
           "videoDetails": {
@@ -21,7 +24,7 @@
         },
         {
           "outputFilePaths": [
-            "s3://vizio-service/streams/6ad8515c8234c974c4a5f2b1/8zv9lgnc/8zv9lgnc_720.m3u8"
+            "s3://vizio-service/streams/6ad8515c8234c974c4a5f2b1/yx8kcdrc/yx8kcdrc_720.m3u8"
           ],
           "durationInMs": 99032,
           "videoDetails": {
@@ -32,7 +35,7 @@
         }
       ],
       "playlistFilePaths": [
-        "s3://vizio-service/streams/6ad8515c8234c974c4a5f2b1/8zv9lgnc/8zv9lgnc.m3u8"
+        "s3://vizio-service/streams/6ad8515c8234c974c4a5f2b1/yx8kcdrc/yx8kcdrc.m3u8"
       ],
       "type": "HLS_GROUP"
     }

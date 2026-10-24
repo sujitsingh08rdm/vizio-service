@@ -7,7 +7,9 @@ mongoose
   .then(() => console.log("video - DB Running"))
   .catch(() => console.log("video - DB Failed"));
 
+import "./video.worker";
 import express from "express";
+
 import VideoRouter from "./video.router";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -18,6 +20,7 @@ app.listen(process.env.PORT, () => {
 });
 
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: false }));
 app.use(cors({ origin: process.env.CLIENT, credentials: true }));
 app.use(cookieParser());
