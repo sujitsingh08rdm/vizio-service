@@ -20,7 +20,7 @@ app.listen(process.env.PORT, () => {
 });
 
 app.use(express.json());
-
+app.use(express.json({ type: ["application/json", "text/plain"] }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cors({ origin: process.env.CLIENT, credentials: true }));
 app.use(cookieParser());
