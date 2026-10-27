@@ -1,7 +1,10 @@
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
 import {
+  createThumbnail,
   createVideo,
   fetchVideos,
+  getVideoStreamingUrl,
+  thumbnailWebhook,
   videoTranscodingWebhook,
 } from "./video.controller";
 import {
@@ -19,12 +22,23 @@ VideoRouter.post(
   createVideo,
 );
 
+VideoRouter.post(
+  "/thumbnail",
+  AuthMiddleware, 
+  createThumbnail,
+);
+
 VideoRouter.get("/", AuthMiddleware, fetchVideos);
+VideoRouter.post("/stream", getVideoStreamingUrl);
 
 VideoRouter.post(
   "/webhook/transcoding",
   WebhookGuardMiddleware,
   videoTranscodingWebhook,
+);
+VideoRouter.post(
+  "/webhook/thumbnail",
+  thumbnailWebhook,
 );
 
 export default VideoRouter;

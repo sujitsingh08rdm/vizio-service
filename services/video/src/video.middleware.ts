@@ -23,6 +23,9 @@ export const WebhookGuardMiddleware = (
     }
     next();
   } catch (error) {
+    if (error instanceof Error) {
+      console.log(error.message);
+    }
     res.status(401).json({ message: "unauthorized" });
   }
 };

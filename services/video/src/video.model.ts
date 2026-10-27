@@ -32,6 +32,11 @@ const schema = new Schema<VideoModelInterface>(
       enum: VideoStatusEnum,
       default: VideoStatusEnum.draft,
     },
+    thumbnail: {
+      high: { path: String, width: Number, height: Number },
+      medium: { path: String, width: Number, height: Number },
+      low: { path: String, width: Number, height: Number },
+    },
   },
   { timestamps: true },
 );
